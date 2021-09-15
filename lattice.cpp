@@ -103,7 +103,9 @@ void Lattice::calcMadelung()
         }
         prev = recip;
     }
-
+    double wo_term = real + recip - 2*alpha/sqrt(pi);
+    double w_term = wo_term - pi/(alpha*alpha*volume);
+    std::cout << alpha << " " << wo_term << " " << w_term << std::endl;
     madelung = real + recip - 2*alpha/sqrt(pi) - pi/(alpha*alpha*volume);
 }
 
@@ -147,4 +149,51 @@ double Lattice::ewald(const std::vector<double> & r)
 
     return real + recip; //- pi/(volume*alpha*alpha);
 
+}
+
+double Lattice::C3d()
+{
+    double prefactor = 0.25 * pow(volume,4./3.);
+    double c3d;
+
+    double alpha = 1;
+    while (alpha > 1e-5)
+    {
+        double recip = 0.0;
+        double prev = 1e10;
+        for (int nmax = 1; nmax <= 50; nmax++)
+        {
+            double val = 0.0;
+            for (int na = -nmax; na <= nmax; na++)
+            {
+                for (int nb = -nmax; nb <= nmax; nb++)
+                {
+                    for (int nc = -nmax; nc <= nmax; nc++)
+                    {
+                        if ((na==0)&&(nb==0)&&(nc==0))
+                        {
+                            continue;
+                        }
+                        std::vector<double> n = vecMath::sum(vecMath::scalarMult(na,a),vecMath::scalarMult(nb,b),vecMath::scalarMult(nc,c));
+                        double norm = vecMath::norm(n);
+                        val += 4*pi/volume * norm * exp(-alpha * norm * norm);
+                    }
+                }
+            }
+            if (abs(val-prev)<1.0e-8)
+            {
+                recip = val;
+                break;
+            }
+            prev = val;
+            if (nmax == 50)
+                std::cerr << " error" << std::endl;
+        }
+    
+        c3d = prefactor * (1.0/(pi*alpha*alpha) - recip);
+        std::cout << alpha << " " << c3d << std::endl;
+        alpha *= 0.9;
+    }
+
+    return c3d;
 }

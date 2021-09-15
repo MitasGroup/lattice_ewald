@@ -12,6 +12,7 @@ class Lattice
         std::vector<double> x,y,z;
         std::vector<double> a,b,c;
         double ewald(const std::vector<double> & r);
+        double C3d();
     private:
         int real_nmax;
         int recip_nmax;

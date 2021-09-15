@@ -28,6 +28,7 @@ int main(int argc, char ** argv)
     double alpha = 1.0;
     bool plot_ewald=false;
     bool madelung_scaling=false;
+    bool C3d = false;
     while(iargc < argc)
     {
         std::string a(argv[iargc]);
@@ -54,6 +55,10 @@ int main(int argc, char ** argv)
         else if (a == "--madelung_scaling")
         {
             madelung_scaling = true;
+        }
+        else if (a == "--C3d")
+        {
+            C3d = true;
         }
         else 
         {
@@ -118,6 +123,11 @@ int main(int argc, char ** argv)
         fv5.close();
         fv6.close();
         fv7.close();
+    }
+
+    if (C3d)
+    {
+        std::cout << "Drummond C3d constant" << lat.C3d() << std::endl;
     }
 
 }
